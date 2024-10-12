@@ -3,24 +3,41 @@
 {% block title %}{{ category.name }}{% endblock %}
 
 {% block body %}
-    <h1>{{ category.name }}</h1>
-    <p>{{ category.description }}</p>
-
+<div class="forum-container">
+    <h1 class="category-title">{{ category.name }}</h1>
+    <p class="category-description">{{ category.description }}</p>
+    
     <a href="{{ path('app_topic_new', {'categoryId': category.id}) }}" class="btn btn-primary">Nouveau sujet</a>
-
-    {% for topic in category.topics %}
-        <div class="topic">
-            <h2>
-                <a href="{{ path('app_topic_show', {'id': topic.id}) }}">
-                    {{ topic.title }}
-                </a>
-            </h2>
-            <small>
-                Créé par {{ topic.author.username }} le {{ topic.createdAt|date('d/m/Y H:i') }}
-                | {{ topic.posts|length }} réponses
-            </small>
-        </div>
-    {% else %}
-        <p>Aucun sujet n'a été créé dans cette catégorie pour le moment.</p>
-    {% endfor %}
+    
+    <table class="topic-list">
+        <thead>
+            <tr>
+                <th>Sujet</th>
+                <th>Auteur</th>
+                <th>Réponses</th>
+                <th>Vues</th>
+                <th>Dernier message</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for topic in category.topics %}
+            <tr>
+                <td>
+                    <a href="{{ path('app_topic_show', {'id': topic.id}) }}">{{ topic.title }}</a>
+                </td>
+                <td>{{ topic.author.username }}</td>
+                <td>{{ topic.posts|length - 1 }}</td>
+                <td><!-- Ajouter le compteur de vues si implémenté --></td>
+                <td>
+                    {% if topic.posts|length > 0 %}
+                        {% set latestPost = topic.posts|sort((a, b) => b.createdAt <=> a.createdAt)|first %}
+                        par {{ latestPost.user.username }}<br>
+                        le {{ latestPost.createdAt|date('d/m/Y H:i') }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

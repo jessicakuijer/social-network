@@ -1,22 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Forum - Catégories{% endblock %}
+{% block title %}Forum{% endblock %}
 
 {% block body %}
-    <h1>Forum - Catégories</h1>
-
+<div class="forum-container">
+    <h1 class="forum-title">Forum</h1>
+    
     {% for category in categories %}
-        <div class="category">
-            <h2>
-                <a href="{{ path('app_category_show', {'id': category.id}) }}">
-                    {{ category.name }}
-                </a>
-            </h2>
-            <p>{{ category.description }}</p>
+    <div class="forum-category">
+        <h2 class="category-title">
+            <a href="{{ path('app_category_show', {'id': category.id}) }}">{{ category.name }}</a>
+        </h2>
+        <p class="category-description">{{ category.description }}</p>
+        <div class="category-stats">
+            {{ category.topics|length }} topics | 
+            {% set postCount = 0 %}
+            {% for topic in category.topics %}
+                {% set postCount = postCount + topic.posts|length %}
+            {% endfor %}
+            {{ postCount }} posts
         </div>
-    {% else %}
-        <p>Aucune catégorie n'a été créée pour le moment.</p>
+        {% if category.topics|length > 0 %}
+            {% set latestTopic = category.topics|sort((a, b) => b.createdAt <=> a.createdAt)|first %}
+            <div class="latest-post">
+                Dernier sujet : <a href="{{ path('app_topic_show', {'id': latestTopic.id}) }}">{{ latestTopic.title }}</a><br>
+                par {{ latestTopic.author.username }} le {{ latestTopic.createdAt|date('d/m/Y H:i') }}
+            </div>
+        {% endif %}
+    </div>
     {% endfor %}
-
-    <a href="{{ path('app_category_new') }}" class="btn btn-primary">Créer une nouvelle catégorie</a>
+</div>
 {% endblock %}

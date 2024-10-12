@@ -3,36 +3,47 @@
 {% block title %}{{ topic.title }}{% endblock %}
 
 {% block body %}
-    <h1>{{ topic.title }}</h1>
+<div class="forum-container">
+    <h1 class="topic-title">{{ topic.title }}</h1>
     
     {% for post in topic.posts %}
-        <div class="post">
-            <p>{{ post.content }}</p>
-            <small>
-                Par {{ post.user.username }} le {{ post.createdAt|date('d/m/Y H:i') }}
-                {% if app.user == post.user %}
-                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">Éditer</a>
+    <div class="post {% if loop.first %}first-post{% endif %}">
+        <div class="post-sidebar">
+            <div class="user-info">
+                <strong>{{ post.user.username }}</strong><br>
+                <!-- Ajouter d'autres infos utilisateur si disponibles (rang, avatar, etc.) -->
+            </div>
+        </div>
+        <div class="post-content">
+            <div class="post-header">
+                Posté le {{ post.createdAt|date('d/m/Y H:i') }}
+            </div>
+            <div class="post-body">
+                {{ post.content|nl2br }}
+            </div>
+            <div class="post-footer">
+                {% if app.user == post.user or is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_post_edit', {'id': post.id}) }}" class="btn btn-sm btn-secondary">Éditer</a>
                     <form action="{{ path('app_post_delete', {'id': post.id}) }}" method="post" style="display: inline;">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
-                        <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</button>
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</button>
                     </form>
                 {% endif %}
-            </small>
+            </div>
         </div>
-    {% else %}
-        <p>Aucun message dans ce sujet.</p>
+    </div>
     {% endfor %}
-
-    {% if topic.posts is empty or app.user == topic.author or is_granted('ROLE_ADMIN') %}
-        <form action="{{ path('app_topic_delete', {'id': topic.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce sujet ?');">
-            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ topic.id) }}">
-            <button type="submit" class="btn btn-danger">Supprimer le sujet</button>
-        </form>
+    
+    {% if app.user %}
+    <div class="reply-form">
+        <h3>Répondre</h3>
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        {{ form_end(form) }}
+    </div>
+    {% else %}
+        <p>Vous devez être connecté pour répondre.</p>
     {% endif %}
-
-    {# Formulaire pour ajouter un nouveau post #}
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit">Répondre</button>
-    {{ form_end(form) }}
+</div>
 {% endblock %}
