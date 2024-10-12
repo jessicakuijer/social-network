@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil Utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Profil de {{ user.username }}</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Nom d'utilisateur</th>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <th>Prénom</th>
+                <td>{{ user.firstname }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ user.lastname }}</td>
+            </tr>
+            <tr>
+                <th>Bio</th>
+                <td>{{ user.bio }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_index') }}">Retour à la liste</a>
+
+    {% if app.user == user %}
+        <a href="{{ path('app_user_edit', {'id': user.id}) }}">Éditer mon profil</a>
+    {% endif %}
+
+    <h2>Posts de {{ user.username }}</h2>
+    {% for post in user.posts %}
+        <div class="post">
+            <p>{{ post.content }}</p>
+            <p>Posté le {{ post.createdAt|date('d/m/Y H:i') }}</p>
+            <a href="{{ path('app_post_show', {'id': post.id}) }}">Voir le post</a>
+        </div>
+    {% else %}
+        <p>Cet utilisateur n'a pas encore de posts.</p>
+    {% endfor %}
+{% endblock %}

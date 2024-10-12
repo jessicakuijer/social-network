@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des posts{% endblock %}
+
+{% block body %}
+    <h1>Liste des posts</h1>
+
+    <a href="{{ path('app_post_new') }}">Créer un nouveau post</a>
+
+    {% for post in posts %}
+        <div class="post">
+            <p>{{ post.content }}</p>
+            <p>Posté par {{ post.user.username }} le {{ post.createdAt|date('d/m/Y H:i') }}</p>
+            <a href="{{ path('app_post_show', {'id': post.id}) }}">Voir</a>
+            <a href="{{ path('app_post_edit', {'id': post.id}) }}">Éditer</a>
+        </div>
+    {% else %}
+        <p>Aucun post trouvé.</p>
+    {% endfor %}
+{% endblock %}
