@@ -21,9 +21,9 @@
                 <td>{{ user.firstname }}</td>
                 <td>{{ user.lastname }}</td>
                 <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">Voir</a>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-primary">Voir</a>
                     {% if app.user == user %}
-                        <a href="{{ path('app_user_edit', {'id': user.id}) }}">Éditer</a>
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-secondary">Éditer</a>
                     {% endif %}
                 </td>
             </tr>

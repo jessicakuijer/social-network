@@ -26,7 +26,7 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_user_index') }}">Retour à la liste</a>
+    <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-primary">Retour à la liste</a>
 
     {% if app.user == user %}
         <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-secondary">Éditer mon profil</a>

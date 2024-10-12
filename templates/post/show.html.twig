@@ -10,10 +10,10 @@
         <p>Posté par {{ post.user.username }} le {{ post.createdAt|date('d/m/Y H:i') }}</p>
     </div>
 
-    <a href="{{ path('app_post_index') }}">Retour à la liste</a>
+    <a href="{{ path('app_post_index') }}" class="btn btn-sm btn-primary">Retour à la liste</a>
 
     {% if app.user == post.user %}
-        <a href="{{ path('app_post_edit', {'id': post.id}) }}">Éditer</a>
+        <a href="{{ path('app_post_edit', {'id': post.id}) }}" class="btn btn-sm btn-secondary">Éditer</a>
 
         {{ include('post/_delete_form.html.twig') }}
     {% endif %}
