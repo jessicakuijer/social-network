@@ -13,14 +13,15 @@
         </h2>
         <p class="category-description">{{ category.description }}</p>
         <div class="category-stats">
-            {{ category.topics|length }} topics | 
+            {% set topicCount = category.topics|length %}
             {% set postCount = 0 %}
             {% for topic in category.topics %}
                 {% set postCount = postCount + topic.posts|length %}
             {% endfor %}
-            {{ postCount }} posts
+            {{ topicCount }} sujet{% if topicCount > 1 %}s{% endif %} | 
+            {{ postCount }} message{% if postCount > 1 %}s{% endif %}
         </div>
-        {% if category.topics|length > 0 %}
+        {% if topicCount > 0 %}
             {% set latestTopic = category.topics|sort((a, b) => b.createdAt <=> a.createdAt)|first %}
             <div class="latest-post">
                 Dernier sujet : <a href="{{ path('app_topic_show', {'id': latestTopic.id}) }}">{{ latestTopic.title }}</a><br>

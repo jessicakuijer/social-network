@@ -29,7 +29,7 @@
     <a href="{{ path('app_user_index') }}">Retour à la liste</a>
 
     {% if app.user == user %}
-        <a href="{{ path('app_user_edit', {'id': user.id}) }}">Éditer mon profil</a>
+        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-secondary">Éditer mon profil</a>
     {% endif %}
 
     <h2>Posts de {{ user.username }}</h2>

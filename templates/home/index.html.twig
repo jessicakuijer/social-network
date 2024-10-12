@@ -11,28 +11,30 @@
         <p>Connectez-vous ou inscrivez-vous pour partager vos posts !</p>
     {% endif %}
 
-    <h2 class="mt-4 mb-3">Derniers Posts</h2>
+    <h2 class="mt-4 mb-3">Derniers Messages</h2>
 
     {% if latest_posts is empty %}
         <p>Aucun post pour le moment.</p>
     {% else %}
         <div class="row">
-            {% for post in latest_posts %}
+            {% for post in latest_posts|slice(0, 6) %}
                 <div class="col-md-6 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">{{ post.user.username }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ post.createdAt|date('d/m/Y H:i') }}</h6>
-                            <p class="card-text">{{ post.content }}</p>
+                            <p class="card-text">{{ post.content|slice(0, 100) }}{% if post.content|length > 100 %}...{% endif %}</p>
                             <a href="{{ path('app_post_show', {'id': post.id}) }}" class="card-link">Voir le post</a>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-    {% endif %}
 
-    {% if app.user %}
-        <a href="{{ path('app_post_new') }}" class="btn btn-primary mt-3">Créer un nouveau post</a>
+        {% if latest_posts|length > 6 %}
+            <div class="text-center mt-3">
+                <a href="{{ path('app_forum_index') }}" class="btn btn-primary">Voir plus de messages</a>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}

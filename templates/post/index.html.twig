@@ -5,15 +5,19 @@
 {% block body %}
     <h1>Liste des derniers messages</h1>
 
-    {# <a href="{{ path('app_post_new') }}">Créer un nouveau post</a> #}
-
     {% for post in posts %}
         <div class="post">
             <p class="action-link">{{ post.content }}</p>
             <p class="action-link">Posté par {{ post.user.username }} le {{ post.createdAt|date('d/m/Y H:i') }}</p>
             <a href="{{ path('app_post_show', {'id': post.id}) }}" class="action-link">Voir</a>
-            <a href="{{ path('app_post_edit', {'id': post.id}) }}" class="action-link">Éditer</a>
-        
+            
+            {% if app.user and (app.user == post.user or is_granted('ROLE_ADMIN')) %}
+                <a href="{{ path('app_post_edit', {'id': post.id}) }}" class="action-link btn btn-sm btn-secondary">Éditer</a>
+                <form action="{{ path('app_post_delete', {'id': post.id}) }}" method="post" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                    <button type="submit" class="action-link btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</button>
+                </form>
+            {% endif %}
         </div>
     {% else %}
         <p>Aucun post trouvé.</p>
