@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle catégorie{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle catégorie</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Créer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_forum_index') }}">Retour à la liste des catégories</a>
+{% endblock %}

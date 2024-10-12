@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau sujet dans {{ category.name }}{% endblock %}
+
+{% block body %}
+    <h1>Nouveau sujet dans {{ category.name }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.firstPostContent) }}
+        <button type="submit" class="btn btn-primary">Créer le sujet</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_category_show', {'id': category.id}) }}" class="btn btn-secondary">Retour à la catégorie</a>
+{% endblock %}

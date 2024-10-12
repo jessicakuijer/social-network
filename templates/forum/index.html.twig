@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forum - Catégories{% endblock %}
+
+{% block body %}
+    <h1>Forum - Catégories</h1>
+
+    {% for category in categories %}
+        <div class="category">
+            <h2>
+                <a href="{{ path('app_category_show', {'id': category.id}) }}">
+                    {{ category.name }}
+                </a>
+            </h2>
+            <p>{{ category.description }}</p>
+        </div>
+    {% else %}
+        <p>Aucune catégorie n'a été créée pour le moment.</p>
+    {% endfor %}
+
+    <a href="{{ path('app_category_new') }}" class="btn btn-primary">Créer une nouvelle catégorie</a>
+{% endblock %}

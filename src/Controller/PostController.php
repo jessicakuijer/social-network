@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/post')]
 class PostController extends AbstractController
@@ -54,33 +55,53 @@ class PostController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_post_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('edit', 'post', message: 'Vous ne pouvez pas éditer ce post.')]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
+        // Vérifier si l'utilisateur actuel est l'auteur du post
+        if ($post->getUser() !== $this->getUser()) {
+            throw new AccessDeniedException('Vous n\'êtes pas autorisé à éditer ce message.');
+        }
+
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_post_index');
+            $this->addFlash('success', 'Votre message a été mis à jour.');
+            return $this->redirectToRoute('app_topic_show', ['id' => $post->getTopic()->getId()]);
         }
 
         return $this->render('post/edit.html.twig', [
             'post' => $post,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'app_post_delete', methods: ['POST'])]
-    #[IsGranted('delete', 'post', message: 'Vous ne pouvez pas supprimer ce post.')]
+    #[Route('/{id}/delete', name: 'app_post_delete', methods: ['POST'])]
     public function delete(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$post->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($post);
-            $entityManager->flush();
+        if ($post->getUser() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw new AccessDeniedException('Vous n\'êtes pas autorisé à supprimer ce message.');
         }
 
-        return $this->redirectToRoute('app_post_index');
+        if ($this->isCsrfTokenValid('delete'.$post->getId(), $request->request->get('_token'))) {
+            $topic = $post->getTopic();
+            $entityManager->remove($post);
+            
+            // Vérifier si c'était le dernier post du topic
+            if ($topic->getPosts()->count() === 1) {
+                $entityManager->remove($topic);
+                $this->addFlash('info', 'Le sujet a été supprimé car c\'était le dernier message.');
+                $entityManager->flush();
+                return $this->redirectToRoute('app_category_show', ['id' => $topic->getCategory()->getId()]);
+            }
+            
+            $entityManager->flush();
+            $this->addFlash('success', 'Le message a été supprimé.');
+            return $this->redirectToRoute('app_topic_show', ['id' => $topic->getId()]);
+        }
+
+        return $this->redirectToRoute('app_topic_show', ['id' => $post->getTopic()->getId()]);
     }
 }

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ topic.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ topic.title }}</h1>
+    
+    {% for post in topic.posts %}
+        <div class="post">
+            <p>{{ post.content }}</p>
+            <small>
+                Par {{ post.user.username }} le {{ post.createdAt|date('d/m/Y H:i') }}
+                {% if app.user == post.user %}
+                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">Éditer</a>
+                    <form action="{{ path('app_post_delete', {'id': post.id}) }}" method="post" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                        <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</button>
+                    </form>
+                {% endif %}
+            </small>
+        </div>
+    {% else %}
+        <p>Aucun message dans ce sujet.</p>
+    {% endfor %}
+
+    {% if topic.posts is empty or app.user == topic.author or is_granted('ROLE_ADMIN') %}
+        <form action="{{ path('app_topic_delete', {'id': topic.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce sujet ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ topic.id) }}">
+            <button type="submit" class="btn btn-danger">Supprimer le sujet</button>
+        </form>
+    {% endif %}
+
+    {# Formulaire pour ajouter un nouveau post #}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Répondre</button>
+    {{ form_end(form) }}
+{% endblock %}
